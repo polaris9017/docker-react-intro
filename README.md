@@ -38,7 +38,7 @@
    .\build.ps1 --username=<본인 Docker Hub ID> --command=start
    ```
 
-4. **Stop the Application**
+4. **어플리케이션 중지**
 
    위 3번 과정에서 start 인자 대신 stop을 넣어주면 배포된 어플리케이션을 중지함.\
    이때, k8s에서 배포된 어플리케이션의 모든 리소스가 삭제됨 
