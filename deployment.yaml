@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: dpy-react-app
+  labels:
+    app: node-react-app
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: node-react-app
+  template:
+    metadata:
+      labels:
+        app: node-react-app
+    spec:
+      containers:
+        - name: react-app-node
+          image: moonrise917/node-react-app:latest
+          ports:
+            - containerPort: 80

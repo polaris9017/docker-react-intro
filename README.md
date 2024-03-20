@@ -1,46 +1,57 @@
-# Getting Started with Create React App
+# Docker, k8s를 활용한 Node.js-React App 배포
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+아래 과정에서 React App의 Production 빌드를 Docker container화 하고, Kubernetes로 배포하는 과정을 설명하고자 함
 
-## Available Scripts
+## Prerequisites
 
-In the project directory, you can run:
+- Docker (Docker Hub에 로그인되어 있어야 함)
+- Kubernetes (Docker Desktop에서 활성화)
+- Bash(Unix 환경에서 필요)
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## 과정
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+**(1, 2번은 수동으로 컨테이너 빌드 및 Dcoker Hub에 푸시하는 과정이므로 3번으로 건너뛰어도 무방함)**
 
-### `npm test`
+1. **Dockerfile 로 이미지 빌드**
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+   ```bash
+   docker build -t <본인 Docker Hub ID>/node-react-app .
+   ```
 
-### `npm run build`
+2. **Docker Hub에 이미지 푸시**
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+   ```bash
+   docker push <본인 Docker Hub ID>/node-react-app:latest
+   ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+3. **어플리케이션 배포**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+   아래 스크립트 실행 시 컨테이너 이미지 빌드 및 푸시, 그리고 k8s에 배포까지 자동으로 수행함
 
-### `npm run eject`
+   ```bash
+   # Unix 환경 (Mac, Linux, WSL, ...)
+   ./build.sh <본인 Docker Hub ID> start
+   ```
+   ```shell
+   # Windows 환경
+   .\build.ps1 --username=<본인 Docker Hub ID> --command=start
+   ```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+4. **Stop the Application**
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+   위 3번 과정에서 start 인자 대신 stop을 넣어주면 배포된 어플리케이션을 중지함.\
+   이때, k8s에서 배포된 어플리케이션의 모든 리소스가 삭제됨 
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+   ```bash
+   # Unix 환경 (Mac, Linux, WSL, ...)
+   ./build.sh <your-docker-hub-username> stop
+   ```
+   ```shell
+   # Windows 환경
+   .\build.ps1 --username=<본인 Docker Hub ID> --command=stop
+   ```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## 참고
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+- 본 예시에서 사용된 NodePort의 port 번호는 최소 30000 이상으로, 실제 배포 시에는 LoadBalancer나 Ingress를 사용해야 함 ([참고 자료](https://sunrise-min.tistory.com/entry/Kubernetes-NodePort-vs-LoadBalancer-vs-Ingress))
